@@ -29,7 +29,7 @@ public class InfinityArcItem extends Item {
             InfinityState.activate(user, 60); // 60 ticks = 3s
 
             // cooldown (10 min = 12000 ticks)
-            user.getItemCooldownManager().set(this, 12);
+            user.getItemCooldownManager().set(this, 12000);
 
             // visual feedback
             user.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60, 0));

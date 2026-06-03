@@ -2,9 +2,7 @@ package net.itsfirecat.axissmp.item;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.itsfirecat.axissmp.AxisSMP;
-import net.itsfirecat.axissmp.item.custom.FreezeArcItem;
-import net.itsfirecat.axissmp.item.custom.InfinityArcItem;
-import net.itsfirecat.axissmp.item.custom.PulseArcItem;
+import net.itsfirecat.axissmp.item.custom.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
@@ -21,10 +19,10 @@ public class ModItems {
     public static final Item PULSE_ARC = registerItem("pulse_arc", new PulseArcItem(new Item.Settings()));
     public static final Item DASH_SHARD = registerItem("dash_shard", new Item(new Item.Settings()));
     public static final Item DASH_ARTIFACT = registerItem("dash_artifact", new Item(new Item.Settings()));
-    public static final Item DASH_ARC = registerItem("dash_arc", new Item(new Item.Settings()));
+    public static final Item DASH_ARC = registerItem("dash_arc", new DashArcItem(new Item.Settings()));
     public static final Item RESONANCE_SHARD = registerItem("resonance_shard", new Item(new Item.Settings()));
     public static final Item RESONANCE_ARTIFACT = registerItem("resonance_artifact", new Item(new Item.Settings()));
-    public static final Item RESONANCE_ARC = registerItem("resonance_arc", new Item(new Item.Settings()));
+    public static final Item RESONANCE_ARC = registerItem("resonance_arc", new ResonanceArcItem(new Item.Settings()));
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(AxisSMP.MOD_ID, name), item);

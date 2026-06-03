@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/axissmp-template-1.21.main.iml" filepath="$PROJECT_DIR$/.idea/modules/axissmp-template-1.21.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/axissmp-template-1.21.test.iml" filepath="$PROJECT_DIR$/.idea/modules/axissmp-template-1.21.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/fabric-axissmp-1.21.X.iml" filepath="$PROJECT_DIR$/.idea/fabric-axissmp-1.21.X.iml" />
     </modules>
   </component>

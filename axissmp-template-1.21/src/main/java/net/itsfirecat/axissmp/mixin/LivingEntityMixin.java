@@ -15,7 +15,6 @@ public class LivingEntityMixin {
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void cancelInfinityDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        System.out.println("damage hook fired");
 
         if ((Object)this instanceof PlayerEntity player) {
             if (InfinityState.isActive(player)) {

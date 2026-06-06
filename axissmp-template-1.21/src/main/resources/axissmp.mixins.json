@@ -4,7 +4,9 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"ExampleMixin",
-		"LivingEntityMixin"
+		"LivingEntityMixin",
+		"MinecraftClientMixin",
+		"EntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

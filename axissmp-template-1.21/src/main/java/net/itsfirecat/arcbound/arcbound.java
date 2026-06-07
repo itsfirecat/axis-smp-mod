@@ -82,7 +82,7 @@ public class arcbound implements ModInitializer {
 							List<PlayerEntity> playersInRange = player.getServerWorld().getEntitiesByClass(
 									PlayerEntity.class,
 									area,
-									p -> p != player
+									p -> p == player // convert back to not player later
 							);
 
 							// Reference your custom item instances safely from ModItems
@@ -105,11 +105,10 @@ public class arcbound implements ModInitializer {
 						}
 
 						case INFINITY -> {
-							// INFINITY QTE: Hollow Purple projectile payload release
-							// Spawns a baseline velocity entity (can be swapped for a custom projectile entity later)
-							SnowballEntity purpleBall = new SnowballEntity(player.getWorld(), player);
-							purpleBall.setVelocity(player, player.getPitch(), player.getYaw(), 0.0f, 3.5f, 0.0f);
-							player.getWorld().spawnEntity(purpleBall);
+							// HOLLOW PURPLE REWARD: Spawns the true absolute erasure projectile
+							net.itsfirecat.arcbound.entity.HollowPurpleEntity purple = new net.itsfirecat.arcbound.entity.HollowPurpleEntity(player.getWorld(), player);
+							purple.setVelocity(player, player.getPitch(), player.getYaw(), 0.0f, 2.0f, 0.0f); // Fast, controlled linear path
+							player.getWorld().spawnEntity(purple);
 						}
 					}
 

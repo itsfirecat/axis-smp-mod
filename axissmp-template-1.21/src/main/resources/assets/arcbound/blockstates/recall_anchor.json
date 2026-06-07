@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "arcbound:block/recall_anchor"
+    }
+  }
+}

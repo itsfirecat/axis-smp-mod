@@ -1,32 +1,32 @@
 {
 	"schemaVersion": 1,
-	"id": "axissmp",
+	"id": "arcbound",
 	"version": "${version}",
-	"name": "AxisSMP",
-	"description": "Axis SMP Official Mod",
+	"name": "Arcbound",
+	"description": "Arcbound.",
 	"authors": [
 		"itsfirecat"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/firecat907/axis-smp-mod"
+		"sources": "https://github.com/itsfirecat/axis-smp-mod"
 	},
 	"license": "GPLv3",
-	"icon": "assets/axissmp/icon.png",
+	"icon": "assets/arcbound/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.itsfirecat.axissmp.AxisSMP"
+			"net.itsfirecat.arcbound.arcbound"
 		],
 		"fabric-datagen": [
-			"net.itsfirecat.axissmp.AxisSMPDataGenerator"
+			"net.itsfirecat.arcbound.arcboundDataGenerator"
 		],
 		"client": [
-			"net.itsfirecat.axissmp.AxisSMPClient"
+			"net.itsfirecat.arcbound.arcboundClient"
 		]
 	},
 	"mixins": [
-		"axissmp.mixins.json"
+		"arcbound.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.19.1",

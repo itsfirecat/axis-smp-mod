@@ -1,0 +1,19 @@
+{
+  "item.arcbound.freeze_shard": "Freeze Shard",
+  "item.arcbound.freeze_artifact": "Freeze Artifact",
+  "item.arcbound.freeze_arc": "Freeze Arc",
+  "item.arcbound.infinity_artifact": "Infinity Artifact",
+  "item.arcbound.infinity_arc": "Infinity Arc",
+  "item.arcbound.pulse_artifact": "Pulse Artifact",
+  "item.arcbound.pulse_arc": "Pulse Arc",
+  "item.arcbound.dash_shard": "Dash Shard",
+  "item.arcbound.dash_artifact": "Dash Artifact",
+  "item.arcbound.dash_arc": "Dash Arc",
+  "item.arcbound.resonance_shard": "Resonance Shard",
+  "item.arcbound.resonance_artifact": "Resonance Artifact",
+  "item.arcbound.resonance_arc": "Resonance Arc",
+
+  "block.arcbound.recall_anchor": "Arc Recall Anchor",
+
+  "itemgroup.arcbound.axis_smp_items": "Axis SMP"
+}

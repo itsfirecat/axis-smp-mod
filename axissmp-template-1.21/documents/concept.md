@@ -1,4 +1,4 @@
-# AxisSMP Arc System — Design Document
+# arcbound Arc System — Design Document
 
 ## Progression
 
@@ -39,12 +39,7 @@
 - **Visual:** Custom particles on blink
 
 ---
-### SHADOW ARC - Low Tier (6000t / 5min cooldown)
 
-Ability: Makes 10 clones of player which used the arc, similar to the JJK 10 Shadows cursed technique. Possible by using Mannequin mobs in 1.21.9+ or we have to do a complete system rework
-
-- **Visual:** 10 clones of the player are placed randomly in a 10 block radius. Fake players spawn in with "magical poof" particles
-- - - 
 ### RESONANCE ARC — Mid Tier (8400t / 7min cooldown)
 
 **Ability:** Pulls all entities within 10 block radius toward player on use **QTE:** If timed correctly after activation → 5 seconds of Entity ESP in 20 block radius
@@ -66,11 +61,12 @@ Ability: Makes 10 clones of player which used the arc, similar to the JJK 10 Sha
 
 ### PULSE ARC — High Tier (12000t / 10min cooldown)
 
-**Ability:** 5block AOE knockback burst in radius around player **QTE:** If timed correctly → EMPs all other Arc items in range 10 blocks (forces cooldown on nearby players' arcs)
+**Ability:** 5block AOE knockback burst in radius around player, wind-like ripple effect, similar to resonance arc **QTE:** If timed correctly → EMPs all other Arc items in range 10 blocks (forces cooldown on nearby players' arcs)
 
-- **Visual:**
-    - Screen darkens
-    - Arc items form a circle around the player
+- **Visual:** (on qte)
+    - Screen darkens for everyone in a 10 bl radius
+    - Arc user slowly floats up
+    - Arc items form a circle around the player, slowly moving clockwise
     - All arcs shatter simultaneously
     - Player + nearby players get momentarily flashbanged
 - High tier, no invincibility (infinity already covers that)
@@ -89,8 +85,7 @@ Ability: Makes 10 clones of player which used the arc, similar to the JJK 10 Sha
 
 ## Known Bugs / TODOs
 
-- Resonance + Dash custom item classes not yet created
 - Miniboss spawning + chunk cap system not yet implemented
-- QTE system to be ported from DapUrHomies mod (MIT licensed)
+- QTE system not fully finished
 - Custom structures + boss fights not yet designed
 - Configurable arc cooldown tiers via options config file (low/mid/high tick values adjustable without recompiling)

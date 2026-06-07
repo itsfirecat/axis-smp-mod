@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "axissmp:recall_anchor"
+    "arcbound:recall_anchor"
   ]
 }

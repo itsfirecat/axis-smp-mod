@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "arcbound:block/recall_anchor_bottom",
+    "up": "arcbound:block/recall_anchor_top",
+    "north": "arcbound:block/recall_anchor_side",
+    "south": "arcbound:block/recall_anchor_side",
+    "west": "arcbound:block/recall_anchor_side",
+    "east": "arcbound:block/recall_anchor_side"
+  }
+}

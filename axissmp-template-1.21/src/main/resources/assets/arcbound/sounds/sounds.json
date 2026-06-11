@@ -1,0 +1,14 @@
+{
+  "hollow_purple.blue_spawn": {
+    "sounds": ["arcbound:hollow_purple/blue_spawn"]
+  },
+  "hollow_purple.red_spawn": {
+    "sounds": ["arcbound:hollow_purple/red_spawn"]
+  },
+  "hollow_purple.merge": {
+    "sounds": ["arcbound:hollow_purple/merge"]
+  },
+  "hollow_purple.launch": {
+    "sounds": ["arcbound:hollow_purple/launch"]
+  }
+}

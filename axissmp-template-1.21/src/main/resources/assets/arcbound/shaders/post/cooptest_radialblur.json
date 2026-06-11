@@ -1,0 +1,20 @@
+{
+  "targets": [ "swap" ],
+  "passes": [
+    {
+      "name": "blit",
+      "intarget": "arcbound:main",
+      "outtarget": "swap",
+      "uniforms": []
+    },
+    {
+      "name": "arc_radialblur",
+      "intarget": "swap",
+      "outtarget": "arcbound:main",
+      "uniforms": [
+        { "name": "BlurStrength", "values": [0.035] },
+        { "name": "Samples",      "values": [8.0]   }
+      ]
+    }
+  ]
+}

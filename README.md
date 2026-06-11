@@ -1,6 +1,6 @@
-## Axis SMP Mod
+## arcbound Mod
 
-A Fabric mod made specifically for the Axis SMP.
+A Fabric mod made specifically for the arcbound.
 
 Features:
 - Arc abilities with cooldowns

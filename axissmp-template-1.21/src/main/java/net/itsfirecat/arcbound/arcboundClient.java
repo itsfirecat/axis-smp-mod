@@ -1,13 +1,13 @@
 package net.itsfirecat.arcbound;
 
-import net.itsfirecat.arcbound.network.QTEClearPacket;
-import net.itsfirecat.arcbound.network.QTEESPPacket;
-import net.itsfirecat.arcbound.network.QTEStartPacket;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.itsfirecat.arcbound.network.*;
 import net.itsfirecat.arcbound.qte.client.ClientQTE;
 import net.itsfirecat.arcbound.qte.client.QTEHud;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.entity.Entity;
 
 public class arcboundClient implements ClientModInitializer {
     @Override
@@ -29,13 +29,71 @@ public class arcboundClient implements ClientModInitializer {
             });
         });
 
-        // 4. Receive Packet: Now successfully links because it is registered on playS2C channel!
+        // 4. Receive Packet: Clientbound ESP target UUID tracker link
         ClientPlayNetworking.registerGlobalReceiver(QTEESPPacket.ID, (payload, context) -> {
             context.client().execute(() -> {
-                // Activate true client ESP for 5 seconds (5000ms)
                 java.util.Set<java.util.UUID> targets = new java.util.HashSet<>(payload.targets());
                 ClientQTE.activateESP(targets, 5000);
             });
         });
+
+        // 5. Receive Packet: Pulse AoE flashbang overlay visual hook
+        ClientPlayNetworking.registerGlobalReceiver(ArcFlashPacket.ID, (payload, context) -> {
+            context.client().execute(() -> {
+                net.itsfirecat.arcbound.qte.client.ArcVisuals.triggerFlash(payload.durationMs(), payload.color());
+            });
+        });
+
+        // 6. Receive Packet: JJK Hollow Purple state machine updates
+        ClientPlayNetworking.registerGlobalReceiver(ArcVisualPayload.ID, (payload, context) -> {
+            context.client().execute(() -> {
+                net.minecraft.client.MinecraftClient client = context.client();
+                if (client.world == null) return;
+
+                if (payload.stateId() == 0) {
+                    net.itsfirecat.arcbound.qte.client.ArcVisuals.setAnimationTarget(null, 0);
+                    return;
+                }
+
+                Entity caster = null;
+                for (Entity entity : client.world.getEntities()) {
+                    if (entity.getUuid().equals(payload.casterUuid())) {
+                        caster = entity;
+                        break;
+                    }
+                }
+
+                if (caster == null) return;
+
+                switch (payload.stateId()) {
+                    case 2 -> net.itsfirecat.arcbound.qte.client.ArcVisuals.setAnimationTarget(caster, 1);
+                    case 3 -> net.itsfirecat.arcbound.qte.client.ArcVisuals.setAnimationTarget(caster, 2);
+                    case 4 -> {
+                        net.itsfirecat.arcbound.qte.client.ArcVisuals.triggerInverseShader(150);
+                        net.itsfirecat.arcbound.client.ArcImpactHandler.start(
+                                net.itsfirecat.arcbound.client.ArcImpactHandler.HEAVEN_DAP_SEQUENCE, 33, false);
+                    }
+                }
+            });
+        });
+
+        // 7. Client tick — animations + impact frames
+        ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            net.itsfirecat.arcbound.qte.client.ArcVisuals.tickClientAnimations();
+            net.itsfirecat.arcbound.client.ArcImpactHandler.tick();
+        });
+
+        // 8. Entity renderer
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+                net.itsfirecat.arcbound.arcbound.HOLLOW_PURPLE_ENTITY,
+                net.itsfirecat.arcbound.entity.renderer.HollowPurpleRenderer::new
+        );
+
+        // 9. Shader reload listener
+        net.fabricmc.fabric.api.resource.ResourceManagerHelper.get(
+                net.minecraft.resource.ResourceType.CLIENT_RESOURCES
+        ).registerReloadListener(
+                net.itsfirecat.arcbound.client.ArcImpactRenderType.createReloadListener()
+        );
     }
 }

@@ -4,21 +4,22 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.itsfirecat.arcbound.entity.HollowPurpleEntity;
 import net.itsfirecat.arcbound.item.ModItems;
 import net.itsfirecat.arcbound.item.ModItemGroups;
-import net.itsfirecat.arcbound.network.QTEClearPacket;
-import net.itsfirecat.arcbound.network.QTEESPPacket;
-import net.itsfirecat.arcbound.network.QTEHitPacket;
-import net.itsfirecat.arcbound.network.QTEStartPacket;
+import net.itsfirecat.arcbound.network.*;
 import net.itsfirecat.arcbound.qte.ActiveQTE;
 import net.itsfirecat.arcbound.qte.QTEManager;
 import net.itsfirecat.block.ModBlocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,15 @@ public class arcbound implements ModInitializer {
 	public static final String MOD_ID = "arcbound";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	public static final EntityType<HollowPurpleEntity> HOLLOW_PURPLE_ENTITY = Registry.register(
+			Registries.ENTITY_TYPE,
+			Identifier.of("arcbound", "hollow_purple"),
+			FabricEntityTypeBuilder.<HollowPurpleEntity>create(SpawnGroup.MISC, HollowPurpleEntity::new)
+					.dimensions(EntityDimensions.fixed(1.0f, 1.0f))
+					.trackRangeBlocks(64)
+					.trackedUpdateRate(10)
+					.build()
+	);
 	@Override
 	public void onInitialize() {
 		// Register standard mod elements
@@ -36,11 +46,16 @@ public class arcbound implements ModInitializer {
 		ModItems.registerModItems();
 		ModBlocks.registerModBlocks();
 
+		// Register Audio
+		net.itsfirecat.arcbound.sound.ArcSoundEvents.register();
+
 		// 1. Register modern Fabric 1.21.1 network payload structures
 		// Server-to-Client payloads
 		PayloadTypeRegistry.playS2C().register(QTEStartPacket.ID, QTEStartPacket.CODEC);
 		PayloadTypeRegistry.playS2C().register(QTEClearPacket.ID, QTEClearPacket.CODEC);
 		PayloadTypeRegistry.playS2C().register(QTEESPPacket.ID, QTEESPPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(ArcFlashPacket.ID, ArcFlashPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(ArcVisualPayload.ID, ArcVisualPayload.CODEC);
 
 		// Client-to-Server payloads
 		PayloadTypeRegistry.playC2S().register(QTEHitPacket.ID, QTEHitPacket.CODEC);
@@ -105,10 +120,10 @@ public class arcbound implements ModInitializer {
 						}
 
 						case INFINITY -> {
-							// HOLLOW PURPLE REWARD: Spawns the true absolute erasure projectile
-							net.itsfirecat.arcbound.entity.HollowPurpleEntity purple = new net.itsfirecat.arcbound.entity.HollowPurpleEntity(player.getWorld(), player);
-							purple.setVelocity(player, player.getPitch(), player.getYaw(), 0.0f, 2.0f, 0.0f); // Fast, controlled linear path
-							player.getWorld().spawnEntity(purple);
+							// Start the cinematic charging phase instead of shooting instantly
+							net.itsfirecat.arcbound.entity.HollowPurpleChargeEntity charge =
+									new net.itsfirecat.arcbound.entity.HollowPurpleChargeEntity(player.getWorld(), player);
+							player.getWorld().spawnEntity(charge);
 						}
 					}
 

@@ -1,6 +1,4 @@
-## arcbound Mod
-
-A Fabric mod made specifically for the arcbound.
+## arcbound
 
 Features:
 - Arc abilities with cooldowns

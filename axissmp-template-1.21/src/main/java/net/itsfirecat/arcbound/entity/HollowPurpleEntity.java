@@ -17,31 +17,30 @@ import org.joml.Vector3f;
 
 public class HollowPurpleEntity extends ProjectileEntity {
 
-    // -------------------------------------------------------
-    // Tuning
-    // -------------------------------------------------------
-    private static final int   MAX_AGE          = 200;   // ticks before auto-discard
-    private static final float SPEED            = 0.8f;  // blocks per tick
-    private static final float HITBOX_SIZE      = 1.5f;  // width and height
-    private static final float DAMAGE_RADIUS    = 2.5f;  // expand beyond hitbox
+    private static final int   MAX_AGE       = 200;
+    private static final float SPEED         = 0.8f;
+    private static final float HITBOX_SIZE   = 1.5f;
+    private static final float DAMAGE_RADIUS = 2.5f;
 
     private static final DustColorTransitionParticleEffect PURPLE_TRAIL =
             new DustColorTransitionParticleEffect(
                     new Vector3f(0.28f, 0.00f, 0.55f),
                     new Vector3f(0.50f, 0.00f, 0.70f),
-                    1.8f
+                    2.5f
             );
 
     private int ageTicks = 0;
 
     public HollowPurpleEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
+        this.noClip = true;
     }
 
     public HollowPurpleEntity(EntityType<? extends ProjectileEntity> type, World world, LivingEntity owner) {
         super(type, world);
         this.setOwner(owner);
         this.setPosition(owner.getX(), owner.getEyeY() - 0.4, owner.getZ());
+        this.noClip = true;
 
         Vec3d look = owner.getRotationVec(1.0f);
         this.setVelocity(look.x * SPEED, look.y * SPEED, look.z * SPEED);
@@ -57,22 +56,27 @@ public class HollowPurpleEntity extends ProjectileEntity {
 
     @Override
     public void tick() {
-        // DO NOT call super.tick() — it interferes with noClip movement
         this.ageTicks++;
 
         Vec3d vel = this.getVelocity();
         this.setPosition(this.getX() + vel.x, this.getY() + vel.y, this.getZ() + vel.z);
 
         if (this.getWorld().isClient()) {
-            for (int i = 0; i < 4; i++) {
-                double sx = (Math.random() - 0.5) * 1.0;
-                double sy = (Math.random() - 0.5) * 1.0;
-                double sz = (Math.random() - 0.5) * 1.0;
+            // Dense sphere of particles forming the visible "ball"
+            for (int i = 0; i < 30; i++) {
+                double theta  = Math.random() * 2 * Math.PI;
+                double phi    = Math.acos(2 * Math.random() - 1);
+                double radius = 0.9 + Math.random() * 0.3;
+
+                double ox = radius * Math.sin(phi) * Math.cos(theta);
+                double oy = radius * Math.sin(phi) * Math.sin(theta);
+                double oz = radius * Math.cos(phi);
+
                 this.getWorld().addParticle(PURPLE_TRAIL,
-                        this.getX() + sx,
-                        this.getY() + sy,
-                        this.getZ() + sz,
-                        -vel.x * 0.3, -vel.y * 0.3, -vel.z * 0.3);
+                        this.getX() + ox,
+                        this.getY() + oy,
+                        this.getZ() + oz,
+                        0.0, 0.0, 0.0);
             }
             return;
         }

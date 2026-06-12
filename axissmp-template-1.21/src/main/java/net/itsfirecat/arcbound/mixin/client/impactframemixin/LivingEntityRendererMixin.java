@@ -24,6 +24,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     private void coopSwapRenderLayer(T entity, boolean showBody, boolean translucent,
                                      boolean showOutline,
                                      CallbackInfoReturnable<RenderLayer> cir) {
+        if (ArcImpactHandler.playing) {
+                    ArcImpactRenderType.isReady();
+        }
         if (!ArcImpactHandler.playing) return;
         if (!ArcImpactRenderType.isReady()) return;
 

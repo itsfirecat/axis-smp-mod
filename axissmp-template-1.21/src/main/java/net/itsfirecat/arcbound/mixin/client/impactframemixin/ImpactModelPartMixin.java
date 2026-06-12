@@ -28,7 +28,7 @@ public abstract class ImpactModelPartMixin {
     private int forceOverlay(int overlay) {
         if (!shouldFlash()) return overlay;
         return switch (ArcImpactHandler.currentFrameType) {
-            case BLACK, CYAN -> 0; // white entities — use hurt flash overlay
+            case BLACK, CYAN -> 0;
             default -> OverlayTexture.DEFAULT_UV;
         };
     }

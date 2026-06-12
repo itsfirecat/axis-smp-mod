@@ -14,39 +14,7 @@ public class QTEHud implements HudRenderCallback {
         int height = drawContext.getScaledWindowHeight();
 
         // ==========================================
-        // 1. HIGH-CONTRAST MONOCHROME IMPACT SHADER LAYER
-        // ==========================================
-        if (ArcVisuals.isInverseShaderActive()) {
-            RenderSystem.disableDepthTest();
-            RenderSystem.enableBlend();
-
-            // Advanced Blending: Destroys color saturation on terrain pixels, leaving a stark monochrome style
-            RenderSystem.blendFunc(
-                    GlStateManager.SrcFactor.ZERO,
-                    GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR
-            );
-
-            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-
-            // Draw a high-contrast desaturating filter canvas over the world view
-            drawContext.fill(0, 0, width, height, 0xFF3A3A3A);
-
-            // Reset to default blending pipeline
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.disableBlend();
-            RenderSystem.enableDepthTest();
-        }
-
-        // Standard Flashbang Overlay
-        float flashAlpha = ArcVisuals.getFlashAlpha();
-        if (flashAlpha > 0.0f) {
-            int baseColor = ArcVisuals.getFlashColor() & 0x00FFFFFF;
-            int alphaInt = (int) (flashAlpha * 255) << 24;
-            drawContext.fill(0, 0, width, height, baseColor | alphaInt);
-        }
-
-        // ==========================================
-        // 2. QTE SLIDER BAR RENDERING
+        // QTE SLIDER BAR RENDERING
         // ==========================================
         if (!ClientQTE.isActive()) return;
 

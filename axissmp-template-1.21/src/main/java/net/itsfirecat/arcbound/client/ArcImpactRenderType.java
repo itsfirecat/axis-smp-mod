@@ -14,11 +14,19 @@ public class ArcImpactRenderType {
     @Nullable private static ShaderProgram entityInvertProgram = null;
 
     public static void reload(ResourceManager manager) {
+        System.out.println("[ARCIMPACT] reload() called");
+
+        // Debug: check if resource manager sees the file at all
+        var resource = manager.getResource(
+                net.minecraft.util.Identifier.of("arcbound", "shaders/core/arc_entity_white.json")
+        );
+        System.out.println("[ARCIMPACT] resource present: " + resource.isPresent());
+
         closeAll();
         entityWhiteProgram  = load(manager, "arc_entity_white");
         entityBlackProgram  = load(manager, "arc_entity_black");
         entityInvertProgram = load(manager, "arc_entity_invert");
-        entityInvertProgram = load(manager, "arc_entity_invert");
+        System.out.println("[ARCIMPACT] white=" + entityWhiteProgram + " black=" + entityBlackProgram + " invert=" + entityInvertProgram);
     }
 
     private static ShaderProgram load(ResourceManager manager, String name) {
@@ -26,7 +34,7 @@ public class ArcImpactRenderType {
             return new ShaderProgram(manager, name,
                     VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
         } catch (IOException e) {
-            System.err.println("[CoopMod] " + name + " shader failed: " + e.getMessage());
+            System.err.println("[ARCIMPACT] " + name + " shader failed: " + e.getMessage());
             return null;
         }
     }

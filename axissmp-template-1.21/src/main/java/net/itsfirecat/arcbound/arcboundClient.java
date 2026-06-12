@@ -10,6 +10,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.entity.Entity;
 
 public class arcboundClient implements ClientModInitializer {
+
+    public static int IMPACT_FRAME_DURATION_MS = 33;
     @Override
     public void onInitializeClient() {
         // 1. Register the HUD Render Overlay
@@ -69,9 +71,10 @@ public class arcboundClient implements ClientModInitializer {
                     case 2 -> net.itsfirecat.arcbound.qte.client.ArcVisuals.setAnimationTarget(caster, 1);
                     case 3 -> net.itsfirecat.arcbound.qte.client.ArcVisuals.setAnimationTarget(caster, 2);
                     case 4 -> {
+                        System.out.println("[CLIENT] stateId 4 received");
                         net.itsfirecat.arcbound.qte.client.ArcVisuals.triggerInverseShader(150);
                         net.itsfirecat.arcbound.client.ArcImpactHandler.start(
-                                net.itsfirecat.arcbound.client.ArcImpactHandler.HEAVEN_DAP_SEQUENCE, 33, false);
+                                net.itsfirecat.arcbound.client.ArcImpactHandler.HEAVEN_DAP_SEQUENCE, IMPACT_FRAME_DURATION_MS, false);
                     }
                 }
             });
@@ -86,7 +89,7 @@ public class arcboundClient implements ClientModInitializer {
         // 8. Entity renderer
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
                 net.itsfirecat.arcbound.arcbound.HOLLOW_PURPLE_ENTITY,
-                net.itsfirecat.arcbound.entity.renderer.HollowPurpleRenderer::new
+                net.minecraft.client.render.entity.EmptyEntityRenderer::new
         );
 
         // 9. Shader reload listener
@@ -95,5 +98,12 @@ public class arcboundClient implements ClientModInitializer {
         ).registerReloadListener(
                 net.itsfirecat.arcbound.client.ArcImpactRenderType.createReloadListener()
         );
+
+// Force initial load in case the reload listener registered too late
+        net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
+            net.itsfirecat.arcbound.client.ArcImpactRenderType.reload(
+                    net.minecraft.client.MinecraftClient.getInstance().getResourceManager()
+            );
+        });
     }
 }

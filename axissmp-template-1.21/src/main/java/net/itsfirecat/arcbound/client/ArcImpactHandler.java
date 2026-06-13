@@ -20,9 +20,9 @@ public class ArcImpactHandler {
     };
 
     public static final FrameType[] HEAVEN_DAP_SEQUENCE = {
-            FrameType.WHITE, FrameType.RED, FrameType.CYAN, FrameType.RED,
-            FrameType.WHITE, FrameType.RED, FrameType.CYAN, FrameType.INVERT,
-            FrameType.WHITE, FrameType.RED, FrameType.CYAN, FrameType.INVERT
+            FrameType.WHITE, FrameType.WHITE, FrameType.BLACK, FrameType.BLACK,
+            FrameType.WHITE, FrameType.WHITE, FrameType.BLACK, FrameType.BLACK,
+            FrameType.WHITE, FrameType.WHITE, FrameType.INVERT, FrameType.INVERT
     };
 
     public static volatile boolean   playing          = false;

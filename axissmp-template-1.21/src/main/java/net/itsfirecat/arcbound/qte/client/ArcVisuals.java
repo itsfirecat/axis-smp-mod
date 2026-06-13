@@ -28,6 +28,11 @@ public class ArcVisuals {
     public static float SOUND_PITCH_LAUNCH      = 1.0f;
 
     // -------------------------------------------------------
+    // Impact frame tuning
+    // -------------------------------------------------------
+    public static int IMPACT_FRAME_DURATION_MS = 33;
+
+    // -------------------------------------------------------
     // Timing constants (ms)
     // -------------------------------------------------------
     private static final long RED_SPAWN_TIME   = 600;
@@ -49,12 +54,11 @@ public class ArcVisuals {
     private static boolean mergeSoundPlayed = false;
 
     // -------------------------------------------------------
-    // Flash / shader state
+    // Flashbang state (separate system, used by ArcFlashPacket)
     // -------------------------------------------------------
-    private static long flashStartTime      = 0;
-    private static long flashDurationMs     = 0;
-    private static int  flashColor          = 0xFFFFFF;
-    private static long inverseShaderEndTime = 0;
+    private static long flashStartTime  = 0;
+    private static long flashDurationMs = 0;
+    private static int  flashColor      = 0xFFFFFF;
 
     // -------------------------------------------------------
     // Particle tracking
@@ -86,7 +90,7 @@ public class ArcVisuals {
             );
 
     // -------------------------------------------------------
-    // Flash
+    // Flashbang (AoE)
     // -------------------------------------------------------
     public static void triggerFlash(long durationMs, int color) {
         flashStartTime  = System.currentTimeMillis();
@@ -102,17 +106,6 @@ public class ArcVisuals {
     }
 
     public static int getFlashColor() { return flashColor; }
-
-    // -------------------------------------------------------
-    // Inverse shader
-    // -------------------------------------------------------
-    public static void triggerInverseShader(long durationMs) {
-        inverseShaderEndTime = System.currentTimeMillis() + durationMs;
-    }
-
-    public static boolean isInverseShaderActive() {
-        return System.currentTimeMillis() < inverseShaderEndTime;
-    }
 
     // -------------------------------------------------------
     // Particle tracking (called by Mixin)
@@ -215,8 +208,6 @@ public class ArcVisuals {
         }
 
         // --- Separation logic ---
-        // Before merge starts: fixed distance apart
-        // After merge starts: lerp distance from 1.8 → 0
         double distanceApart;
         if (elapsed < MERGE_START_TIME) {
             distanceApart = 2.8;
@@ -229,10 +220,8 @@ public class ArcVisuals {
         Vec3d blueCenter = center.add(rightVec.multiply(-distanceApart));
         Vec3d redCenter  = center.add(rightVec.multiply(distanceApart));
 
-        // Blue always present
         spawnSphere(client, blueCenter, BLUE_DUST, 20);
 
-        // Red only after RED_SPAWN_TIME
         if (elapsed >= RED_SPAWN_TIME) {
             spawnSphere(client, redCenter, RED_DUST, 20);
         }
@@ -245,10 +234,9 @@ public class ArcVisuals {
     private static void spawnSphere(MinecraftClient client, Vec3d center,
                                     DustColorTransitionParticleEffect effect, int count) {
         for (int i = 0; i < count; i++) {
-            // True spherical distribution
             double theta  = Math.random() * 2 * Math.PI;
             double phi    = Math.acos(2 * Math.random() - 1);
-            double radius = 1.4 + Math.random() * 0.3; // was 1.0–1.25, now 1.4–1.7
+            double radius = 1.4 + Math.random() * 0.3;
 
             double ox = radius * Math.sin(phi) * Math.cos(theta);
             double oy = radius * Math.sin(phi) * Math.sin(theta);

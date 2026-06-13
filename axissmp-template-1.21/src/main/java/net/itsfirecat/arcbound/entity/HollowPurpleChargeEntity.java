@@ -92,7 +92,7 @@ public class HollowPurpleChargeEntity extends Entity {
         if (caster == null) return;
         var players = this.getWorld().getEntitiesByClass(
                 ServerPlayerEntity.class,
-                this.getBoundingBox().expand(50),
+                this.getBoundingBox().expand(20),
                 p -> true
         );
         for (ServerPlayerEntity p : players) {

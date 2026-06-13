@@ -19,7 +19,6 @@
     "client.impactframemixin.HeldItemRendererImpactMixin",
     "client.impactframemixin.ImpactModelPartMixin",
     "client.impactframemixin.LivingEntityRendererMixin",
-    "client.impactframemixin.PlayerRenderFlagMixin",
-    "client.impactframemixin.ArcGameRendererImpactMixin"
+    "client.impactframemixin.PlayerRenderFlagMixin"
   ]
 }

@@ -1,10 +1,8 @@
 package net.itsfirecat.arcbound.qte.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.itsfirecat.arcbound.client.ArcImpactHandler;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
 
 public class QTEHud implements HudRenderCallback {
@@ -12,6 +10,24 @@ public class QTEHud implements HudRenderCallback {
     public void onHudRender(DrawContext drawContext, RenderTickCounter renderTickCounter) {
         int width = drawContext.getScaledWindowWidth();
         int height = drawContext.getScaledWindowHeight();
+
+        // ==========================================
+        // FULL-SCREEN IMPACT FLASH OVERLAY
+        // ==========================================
+        if (ArcImpactHandler.playing) {
+            int flashColor;
+            switch (ArcImpactHandler.currentFrameType) {
+                case WHITE  -> flashColor = 0xFFFFFFFF;
+                case BLACK  -> flashColor = 0xFF000000;
+                case RED    -> flashColor = 0xFFFF0000;
+                case CYAN   -> flashColor = 0xFF00FFFF;
+                case INVERT -> flashColor = 0x00000000; // invert handled per-entity only
+                default     -> flashColor = 0xFFFFFFFF;
+            }
+            if (flashColor != 0x00000000) {
+                drawContext.fill(0, 0, width, height, flashColor);
+            }
+        }
 
         // ==========================================
         // QTE SLIDER BAR RENDERING
@@ -33,8 +49,8 @@ public class QTEHud implements HudRenderCallback {
 
         drawContext.fill(x, y, x + barWidth, y + barHeight, barColor);
 
-        int greenLeft = x + (int)(barWidth * 0.40f);
-        int greenRight = x + (int)(barWidth * 0.60f);
+        int greenLeft = x + (int)(barWidth * ClientQTE.getGreenZoneStart());
+        int greenRight = x + (int)(barWidth * ClientQTE.getGreenZoneEnd());
         drawContext.fill(greenLeft, y, greenRight, y + barHeight, greenColor);
 
         if (!ClientQTE.isFailed()) {

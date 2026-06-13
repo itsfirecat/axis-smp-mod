@@ -11,7 +11,7 @@ import net.minecraft.entity.Entity;
 
 public class arcboundClient implements ClientModInitializer {
 
-    public static int IMPACT_FRAME_DURATION_MS = 33;
+    public static int IMPACT_FRAME_DURATION_MS = 50;
     @Override
     public void onInitializeClient() {
         // 1. Register the HUD Render Overlay
@@ -71,10 +71,10 @@ public class arcboundClient implements ClientModInitializer {
                     case 2 -> net.itsfirecat.arcbound.qte.client.ArcVisuals.setAnimationTarget(caster, 1);
                     case 3 -> net.itsfirecat.arcbound.qte.client.ArcVisuals.setAnimationTarget(caster, 2);
                     case 4 -> {
-                        System.out.println("[CLIENT] stateId 4 received");
-                        net.itsfirecat.arcbound.qte.client.ArcVisuals.triggerInverseShader(150);
                         net.itsfirecat.arcbound.client.ArcImpactHandler.start(
-                                net.itsfirecat.arcbound.client.ArcImpactHandler.HEAVEN_DAP_SEQUENCE, IMPACT_FRAME_DURATION_MS, false);
+                                net.itsfirecat.arcbound.client.ArcImpactHandler.HEAVEN_DAP_SEQUENCE,
+                                net.itsfirecat.arcbound.qte.client.ArcVisuals.IMPACT_FRAME_DURATION_MS,
+                                false);
                     }
                 }
             });

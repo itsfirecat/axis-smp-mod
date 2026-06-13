@@ -21,6 +21,10 @@ public class ClientQTE {
     private static long failTime = 0;
     private static final long FAIL_DURATION_MS = 500; // Keep red/shaking for 0.5s
 
+    // Green zone (randomized per QTE)
+    private static final float GREEN_ZONE_WIDTH = 0.20f;
+    private static float greenZoneStart = 0.40f;
+
     // ESP Logic Storage fields
     private static final Set<UUID> espTargets = new HashSet<>();
     private static long espEndTime = 0;
@@ -33,12 +37,23 @@ public class ClientQTE {
         if (MinecraftClient.getInstance().world != null) {
             startTick = MinecraftClient.getInstance().world.getTime();
         }
+
+        // Randomize green zone position, keeping it fully within [0, 1]
+        greenZoneStart = (float) (Math.random() * (1.0f - GREEN_ZONE_WIDTH));
     }
 
     public static void clear() {
         active = false;
         activeType = null;
         isFailed = false;
+    }
+
+    public static float getGreenZoneStart() {
+        return greenZoneStart;
+    }
+
+    public static float getGreenZoneEnd() {
+        return greenZoneStart + GREEN_ZONE_WIDTH;
     }
 
     public static float getProgress(RenderTickCounter tickCounter) {
@@ -70,8 +85,7 @@ public class ClientQTE {
         float totalProgress = (float) (currentTick - startTick) / (durationTicks / 2.0f);
         float currentProgress = totalProgress > 1.0f ? 2.0f - totalProgress : totalProgress;
 
-        // Expanded green zone (0.40f to 0.60f)
-        if (currentProgress >= 0.40f && currentProgress <= 0.60f) {
+        if (currentProgress >= greenZoneStart && currentProgress <= getGreenZoneEnd()) {
             // SUCCESS! Pass the active QTE context over to the server handler payload
             ClientPlayNetworking.send(new QTEHitPacket(activeType));
             clear(); // Disappear cleanly

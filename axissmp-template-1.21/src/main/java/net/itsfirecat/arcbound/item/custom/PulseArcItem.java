@@ -1,7 +1,9 @@
 package net.itsfirecat.arcbound.item.custom;
 
+import net.itsfirecat.arcbound.network.ArcVisualPayload;
 import net.itsfirecat.arcbound.qte.QTEManager;
 import net.itsfirecat.arcbound.qte.QTEType;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -24,13 +26,12 @@ public class PulseArcItem extends Item {
         ItemStack stack = user.getStackInHand(hand);
 
         if (!world.isClient() && user instanceof ServerPlayerEntity serverPlayer) {
-            // Guard with cooldown manager check
             if (user.getItemCooldownManager().isCoolingDown(this)) {
                 return TypedActionResult.fail(stack);
             }
 
             // ==========================================
-            // BASE ABILITY: TRIPPED IMMEDIATELY ON FIRST USE
+            // BASE ABILITY: TRIGGERED IMMEDIATELY ON USE
             // ==========================================
             double radius = 5.0;
 
@@ -39,17 +40,9 @@ public class PulseArcItem extends Item {
                     user.getBoundingBox().expand(radius),
                     entity -> entity != user
             ).forEach(entity -> {
-                Vec3d direction = entity.getPos()
-                        .subtract(user.getPos())
-                        .normalize();
-
+                Vec3d direction = entity.getPos().subtract(user.getPos()).normalize();
                 double strength = 2.5;
-
-                entity.setVelocity(
-                        direction.x * strength,
-                        1.0, // preserved your verified slight pop vector height
-                        direction.z * strength
-                );
+                entity.setVelocity(direction.x * strength, 1.0, direction.z * strength);
                 entity.velocityModified = true;
             });
 
@@ -62,16 +55,21 @@ public class PulseArcItem extends Item {
                     1.2f
             );
 
+            // FORCE PACKET BROADCAST TO SHOW SHOCKWAVE IMMEDIATELY ON USE
+            // stateId 5 = The expanding horizontal pulse ring
+            for (ServerPlayerEntity trackingPlayer : serverPlayer.getServerWorld().getPlayers()) {
+                ServerPlayNetworking.send(trackingPlayer, new ArcVisualPayload(serverPlayer.getUuid(), 5));
+            }
+
             user.incrementStat(net.minecraft.stat.Stats.USED.getOrCreateStat(this));
 
             // ==========================================
-            // QTE ENGAGEMENT
+            // QTE ENGAGEMENT & PRODUCTION COOLDOWN
             // ==========================================
-            // Start a 40-tick (2-second total loop: 1s right, 1s left bounce) timing window
             QTEManager.startQTE(serverPlayer, QTEType.PULSE, 40, world.getTime());
 
-            // Testing cooldown (3 seconds = 60 ticks). Replace with 12000 for your 10 min production tier later.
-            user.getItemCooldownManager().set(this, 60);
+            // Set final tier production cooldown: 10 minutes = 12000 ticks
+            user.getItemCooldownManager().set(this, 12000);
 
             return TypedActionResult.success(stack);
         }

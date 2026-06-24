@@ -11,14 +11,15 @@ import net.itsfirecat.arcbound.item.ModItemGroups;
 import net.itsfirecat.arcbound.network.*;
 import net.itsfirecat.arcbound.qte.ActiveQTE;
 import net.itsfirecat.arcbound.qte.QTEManager;
+import net.itsfirecat.arcbound.sound.ArcSoundEvents;
 import net.itsfirecat.block.ModBlocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import java.util.List;
 public class arcbound implements ModInitializer {
 	public static final String MOD_ID = "arcbound";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final int PULSE_FLASH_DURATION_MS = 1500;
 
 	public static final EntityType<HollowPurpleEntity> HOLLOW_PURPLE_ENTITY = Registry.register(
 			Registries.ENTITY_TYPE,
@@ -91,16 +93,43 @@ public class arcbound implements ModInitializer {
 						}
 
 						case PULSE -> {
-							// PULSE QTE: EMP Wave — Forces 10-second penalty cooldown on nearby players holding Arcs
+							System.out.println("[Arcbound-Debug] Server received PULSE QTE success for player: " + player.getName().getString());
+
 							double range = 10.0;
-							Box area = player.getBoundingBox().expand(range);
+							net.minecraft.util.math.Box area = player.getBoundingBox().expand(range);
+
+							player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(
+									net.minecraft.entity.effect.StatusEffects.SLOWNESS,
+									40,
+									255,
+									false,
+									false,
+									false
+							));
+
+							List<ServerPlayerEntity> nearbyServerPlayers = player.getServerWorld().getEntitiesByClass(
+									ServerPlayerEntity.class,
+									player.getBoundingBox().expand(range),
+									p -> true
+							);
+
+							System.out.println("[Arcbound-Debug] Broadcasting visual states to " + nearbyServerPlayers.size() + " nearby players.");
+
+							for (ServerPlayerEntity nearby : nearbyServerPlayers) {
+								ServerPlayNetworking.send(nearby, new ArcVisualPayload(player.getUuid(), 6));
+								ServerPlayNetworking.send(nearby, new ArcFlashPacket(arcbound.PULSE_FLASH_DURATION_MS, 0x0A0A0A));
+							}
+
+							player.setVelocity(0.0, 0.45, 0.0);
+							player.velocityModified = true;
+							System.out.println("[Arcbound-Debug] Server applied initial upward velocity vector.");
+
 							List<PlayerEntity> playersInRange = player.getServerWorld().getEntitiesByClass(
 									PlayerEntity.class,
 									area,
-									p -> p == player // convert back to not player later
+									p -> p != player
 							);
 
-							// Reference your custom item instances safely from ModItems
 							List<Item> arcItems = List.of(
 									ModItems.RESONANCE_ARC,
 									ModItems.FREEZE_ARC,
@@ -109,14 +138,25 @@ public class arcbound implements ModInitializer {
 									ModItems.INFINITY_ARC
 							);
 
+							int lockCount = 0;
 							for (PlayerEntity targetPlayer : playersInRange) {
 								for (Item arc : arcItems) {
 									if (arc != null) {
-										// 200 ticks = 10 seconds weapon lock penalty
 										targetPlayer.getItemCooldownManager().set(arc, 200);
+										lockCount++;
 									}
 								}
 							}
+							System.out.println("[Arcbound-Debug] Server locked down " + lockCount + " total arc items on nearby targets.");
+
+							player.getServerWorld().playSound(
+									null,
+									player.getBlockPos(),
+									ArcSoundEvents.PULSE_EMP,
+									SoundCategory.PLAYERS,
+									1.5f,
+									0.8f
+							);
 						}
 
 						case INFINITY -> {
@@ -125,6 +165,7 @@ public class arcbound implements ModInitializer {
 									new net.itsfirecat.arcbound.entity.HollowPurpleChargeEntity(player.getWorld(), player);
 							player.getWorld().spawnEntity(charge);
 						}
+
 					}
 
 					// Finalize and tear down server tracking record

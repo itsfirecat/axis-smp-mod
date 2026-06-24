@@ -10,5 +10,9 @@
   },
   "hollow_purple.launch": {
     "sounds": ["arcbound:hollow_purple/launch"]
+  },
+
+  "pulse.emp": {
+    "sounds": ["arcbound:pulse/emp"]
   }
 }

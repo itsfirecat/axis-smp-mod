@@ -1,38 +1,35 @@
 package net.itsfirecat.arcbound.util;
 
 import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
 public class InfinityState {
 
-    private static final Map<UUID, Integer> active = new HashMap<>();
+    // Store the exact absolute world time when the invincibility should END
+    private static final Map<UUID, Long> activeExpiry = new HashMap<>();
 
     public static void activate(PlayerEntity player, int ticks) {
-        active.put(player.getUuid(), ticks);
+        if (player.getWorld() == null) return;
+
+        // Current world time + 60 ticks = the future expiration timestamp
+        long expiryTime = player.getWorld().getTime() + ticks;
+        activeExpiry.put(player.getUuid(), expiryTime);
     }
 
     public static boolean isActive(PlayerEntity player) {
-        return active.containsKey(player.getUuid());
-    }
+        if (player.getWorld() == null) return false;
 
-    // call this every server tick
-    public static void tick() {
-        Iterator<Map.Entry<UUID, Integer>> it = active.entrySet().iterator();
+        Long expiry = activeExpiry.get(player.getUuid());
+        if (expiry == null) return false;
 
-        while (it.hasNext()) {
-            Map.Entry<UUID, Integer> entry = it.next();
-
-            int time = entry.getValue() - 1;
-
-            if (time <= 0) {
-                it.remove();
-            } else {
-                entry.setValue(time);
-            }
+        // If the current world time has caught up or passed the expiry timestamp, clear it
+        if (player.getWorld().getTime() >= expiry) {
+            activeExpiry.remove(player.getUuid());
+            return false; // Time's up!
         }
+
+        return true; // Still invincible
     }
 }

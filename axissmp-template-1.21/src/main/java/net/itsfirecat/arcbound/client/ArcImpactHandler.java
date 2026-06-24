@@ -72,5 +72,33 @@ public class ArcImpactHandler {
         whiteFrame = (currentFrameType == FrameType.WHITE || currentFrameType == FrameType.RED);
     }
 
+// -------------------------------------------------------
+// Fading flashbang (separate from frame-sequence flashes)
+// -------------------------------------------------------
+    public static volatile boolean fadingFlash = false;
+    private static long fadeStartMs = 0;
+    private static long fadeDurationMs = 0;
+    private static FrameType fadeColorType = FrameType.WHITE;
+
+    public static void startFadingFlash(FrameType colorType, long durationMs) {
+        fadingFlash = true;
+        fadeColorType = colorType;
+        fadeStartMs = System.currentTimeMillis();
+        fadeDurationMs = durationMs;
+    }
+
+    public static float getFadeAlpha() {
+        if (!fadingFlash) return 0.0f;
+        long elapsed = System.currentTimeMillis() - fadeStartMs;
+        if (elapsed >= fadeDurationMs) {
+            fadingFlash = false;
+            return 0.0f;
+        }
+        return 1.0f - ((float) elapsed / (float) fadeDurationMs);
+    }
+
+    public static FrameType getFadeColorType() {
+        return fadeColorType;
+    }
     public static long getStartMs() { return startMs; }
 }

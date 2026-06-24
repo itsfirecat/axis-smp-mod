@@ -12,6 +12,7 @@ public class ArcSoundEvents {
     public static final SoundEvent RED_SPAWN = register("hollow_purple.red_spawn");
     public static final SoundEvent MERGE = register("hollow_purple.merge");
     public static final SoundEvent LAUNCH = register("hollow_purple.launch");
+    public static final SoundEvent PULSE_EMP = register("pulse.emp");
 
     private static SoundEvent register(String name) {
         Identifier id = Identifier.of(arcbound.MOD_ID, name);

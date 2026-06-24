@@ -15,6 +15,7 @@
     "requireAnnotations": true
   },
   "client": [
+    "client.AbstractClientPlayerEntityMixin",
     "client.ParticleManagerMixin",
     "client.impactframemixin.HeldItemRendererImpactMixin",
     "client.impactframemixin.ImpactModelPartMixin",

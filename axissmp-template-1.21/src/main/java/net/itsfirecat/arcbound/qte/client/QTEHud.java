@@ -29,6 +29,24 @@ public class QTEHud implements HudRenderCallback {
             }
         }
 
+// ==========================================
+// FADING FLASHBANG OVERLAY
+// ==========================================
+        if (ArcImpactHandler.fadingFlash) {
+            float alpha = ArcImpactHandler.getFadeAlpha();
+            if (alpha > 0.0f) {
+                int baseColor = switch (ArcImpactHandler.getFadeColorType()) {
+                    case WHITE -> 0xFFFFFF;
+                    case BLACK -> 0x000000;
+                    case RED   -> 0xFF0000;
+                    case CYAN  -> 0x00FFFF;
+                    default    -> 0xFFFFFF;
+                };
+                int alphaInt = (int)(alpha * 255) << 24;
+                drawContext.fill(0, 0, width, height, baseColor | alphaInt);
+            }
+        }
+
         // ==========================================
         // QTE SLIDER BAR RENDERING
         // ==========================================

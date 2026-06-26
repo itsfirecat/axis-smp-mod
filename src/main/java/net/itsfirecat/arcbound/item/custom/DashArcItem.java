@@ -1,5 +1,6 @@
 package net.itsfirecat.arcbound.item.custom;
 
+import net.itsfirecat.arcbound.util.ArcboundCooldowns;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,7 +13,6 @@ import net.minecraft.world.World;
 public class DashArcItem extends Item {
 
     private static final double DISTANCE = 6.0;
-    private static final int COOLDOWN = 6000;
 
     public DashArcItem(Settings settings) {
         super(settings);
@@ -72,7 +72,7 @@ public class DashArcItem extends Item {
 
             user.velocityModified = true;
 
-            user.getItemCooldownManager().set(this, COOLDOWN);
+            user.getItemCooldownManager().set(this, ArcboundCooldowns.getDashCooldown());
         }
 
         return TypedActionResult.success(stack, world.isClient());

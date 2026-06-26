@@ -2,7 +2,7 @@ package net.itsfirecat.arcbound.item;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.itsfirecat.arcbound.arcbound;
-import net.itsfirecat.block.ModBlocks;
+import net.itsfirecat.arcbound.block.ModBlocks;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;

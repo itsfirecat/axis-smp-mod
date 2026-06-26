@@ -1,10 +1,12 @@
 package net.itsfirecat.arcbound;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.itsfirecat.arcbound.command.ArcDebugCommand;
 import net.itsfirecat.arcbound.entity.HollowPurpleEntity;
 import net.itsfirecat.arcbound.item.ModItems;
 import net.itsfirecat.arcbound.item.ModItemGroups;
@@ -12,7 +14,7 @@ import net.itsfirecat.arcbound.network.*;
 import net.itsfirecat.arcbound.qte.ActiveQTE;
 import net.itsfirecat.arcbound.qte.QTEManager;
 import net.itsfirecat.arcbound.sound.ArcSoundEvents;
-import net.itsfirecat.block.ModBlocks;
+import net.itsfirecat.arcbound.block.ModBlocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -172,6 +174,9 @@ public class arcbound implements ModInitializer {
 					QTEManager.removeQTE(player);
 				}
 			});
+		});
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+			ArcDebugCommand.register(dispatcher);
 		});
 	}
 }

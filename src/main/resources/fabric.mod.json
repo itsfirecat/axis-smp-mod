@@ -9,9 +9,9 @@
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/itsfirecat/axis-smp-mod"
+		"sources": "https://github.com/itsfirecat/arcbound"
 	},
-	"license": "GPLv3",
+	"license": "AGPLv3",
 	"icon": "assets/arcbound/icon.png",
 	"environment": "*",
 	"entrypoints": {

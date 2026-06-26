@@ -2,6 +2,7 @@ package net.itsfirecat.arcbound.item.custom;
 
 import net.itsfirecat.arcbound.qte.QTEManager;
 import net.itsfirecat.arcbound.qte.QTEType;
+import net.itsfirecat.arcbound.util.ArcboundCooldowns;
 import net.itsfirecat.arcbound.util.InfinityState;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -58,8 +59,8 @@ public class InfinityArcItem extends Item {
             // Fire off a 40-tick (2-second total loop: 1s right, 1s left bounce) timing window
             QTEManager.startQTE(serverPlayer, QTEType.INFINITY, 40, world.getTime());
 
-            // Testing cooldown (3 seconds = 60 ticks). Replace with 12000 for your 10 min production tier later.
-            user.getItemCooldownManager().set(this, 60);
+            // 60 sec testing cooldown, production is 12000
+            user.getItemCooldownManager().set(this, ArcboundCooldowns.getInfinityCooldown());
 
             return TypedActionResult.success(stack);
         }

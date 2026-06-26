@@ -2,6 +2,7 @@ package net.itsfirecat.arcbound.item.custom;
 
 import net.itsfirecat.arcbound.qte.QTEManager;
 import net.itsfirecat.arcbound.qte.QTEType;
+import net.itsfirecat.arcbound.util.ArcboundCooldowns;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -34,8 +35,8 @@ public class ResonanceArcItem extends Item {
             // Double time allocation (40 ticks = 2 seconds total loop: 1s forward, 1s back)
             QTEManager.startQTE(serverPlayer, QTEType.RESONANCE, 40, world.getTime());
 
-            // Cooldown handling: 60 Ticks = 3 Seconds testing window. Swap to 8400 later.
-            user.getItemCooldownManager().set(this, 60);
+            // 60 ticks for testing, 8400 for release
+            user.getItemCooldownManager().set(this, ArcboundCooldowns.getResonanceCooldown());
             return TypedActionResult.success(stack);
         }
 

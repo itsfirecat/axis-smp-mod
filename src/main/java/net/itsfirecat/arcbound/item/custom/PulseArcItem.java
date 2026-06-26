@@ -4,6 +4,7 @@ import net.itsfirecat.arcbound.network.ArcVisualPayload;
 import net.itsfirecat.arcbound.qte.QTEManager;
 import net.itsfirecat.arcbound.qte.QTEType;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.itsfirecat.arcbound.util.ArcboundCooldowns;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -69,7 +70,7 @@ public class PulseArcItem extends Item {
             QTEManager.startQTE(serverPlayer, QTEType.PULSE, 40, world.getTime());
 
             // Set final tier production cooldown: 10 minutes = 12000 ticks
-            user.getItemCooldownManager().set(this, 12000);
+            user.getItemCooldownManager().set(this, ArcboundCooldowns.getPulseCooldown());
 
             return TypedActionResult.success(stack);
         }

@@ -1,5 +1,6 @@
 package net.itsfirecat.arcbound.item.custom;
 
+import net.itsfirecat.arcbound.util.ArcboundCooldowns;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -39,7 +40,7 @@ public class FreezeArcItem extends Item {
             });
 
             // cooldown (7 minutes = 8400t)
-            user.getItemCooldownManager().set(this, 8400);
+            user.getItemCooldownManager().set(this, ArcboundCooldowns.getFreezeCooldown());
 
             world.playSound(
                     null,

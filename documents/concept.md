@@ -86,6 +86,5 @@
 ## Known Bugs / TODOs
 
 - Miniboss spawning + chunk cap system not yet implemented
-- QTE system not fully finished
 - Custom structures + boss fights not yet designed
 - Configurable arc cooldown tiers via options config file (low/mid/high tick values adjustable without recompiling)

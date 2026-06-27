@@ -60,6 +60,7 @@ public class arcbound implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(QTEESPPacket.ID, QTEESPPacket.CODEC);
 		PayloadTypeRegistry.playS2C().register(ArcFlashPacket.ID, ArcFlashPacket.CODEC);
 		PayloadTypeRegistry.playS2C().register(ArcVisualPayload.ID, ArcVisualPayload.CODEC);
+		PayloadTypeRegistry.playS2C().register(ResonancePulsePayload.ID, ResonancePulsePayload.CODEC);
 
 		// Client-to-Server payloads
 		PayloadTypeRegistry.playC2S().register(QTEHitPacket.ID, QTEHitPacket.CODEC);
@@ -92,6 +93,17 @@ public class arcbound implements ModInitializer {
 
 							// Dispatch exclusively back to the user's client graphics pipeline
 							ServerPlayNetworking.send(player, new QTEESPPacket(targetUuids));
+
+							// Scans for all players inside the radius and sends the QTE sonar packet to each of them
+							List<ServerPlayerEntity> playersInWaveRadius = player.getServerWorld().getEntitiesByClass(
+									ServerPlayerEntity.class,
+									area,
+									p -> true
+							);
+
+							for (ServerPlayerEntity nearbyPlayer : playersInWaveRadius) {
+								ServerPlayNetworking.send(nearbyPlayer, new ResonancePulsePayload(player.getPos(), true));
+							}
 						}
 
 						case PULSE -> {

@@ -1,12 +1,17 @@
 package net.itsfirecat.arcbound.item.custom;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.itsfirecat.arcbound.network.ResonancePulsePayload;
 import net.itsfirecat.arcbound.qte.QTEManager;
 import net.itsfirecat.arcbound.qte.QTEType;
 import net.itsfirecat.arcbound.util.ArcboundCooldowns;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
@@ -30,12 +35,21 @@ public class ResonanceArcItem extends Item {
                 return TypedActionResult.fail(stack);
             }
 
+            System.out.println("[Arcbound-Debug] Server: ResonanceArcItem used by " + serverPlayer.getName().getString());
+
+            // 1. Core Mechanics
             executeBaseAbility(serverPlayer, (ServerWorld) world);
 
-            // Double time allocation (40 ticks = 2 seconds total loop: 1s forward, 1s back)
+            // 2. Client Effects Hook (Applies local shader tint or darkness overlay)
+            serverPlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 30, 0, false, false, false));
+
+            // 3. Network Sync - Send payload to trigger client side terrain sonar particles
+            ServerPlayNetworking.send(serverPlayer, new ResonancePulsePayload(serverPlayer.getPos(), false));
+
+            // 4. QTE Initialization (40 ticks)
             QTEManager.startQTE(serverPlayer, QTEType.RESONANCE, 40, world.getTime());
 
-            // 60 ticks for testing, 8400 for release
+            // 5. Apply variable tick limiters
             user.getItemCooldownManager().set(this, ArcboundCooldowns.getResonanceCooldown());
             return TypedActionResult.success(stack);
         }
@@ -49,9 +63,15 @@ public class ResonanceArcItem extends Item {
         List<LivingEntity> targets = world.getEntitiesByClass(LivingEntity.class, area, entity -> entity != player);
 
         for (LivingEntity entity : targets) {
-            Vec3d direction = player.getPos().subtract(entity.getPos()).normalize();
-            entity.setVelocity(direction.multiply(1.2));
+            // Added vector height offset bump to separate entities cleanly from surface friction
+            Vec3d direction = player.getPos().subtract(entity.getPos()).normalize().multiply(1.2).add(0, 0.2, 0);
+            entity.setVelocity(direction);
             entity.velocityModified = true;
+
+            // Force immediate velocity updates over the wire for other connected players
+            if (entity instanceof ServerPlayerEntity targetPlayer) {
+                targetPlayer.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(targetPlayer));
+            }
         }
     }
 }

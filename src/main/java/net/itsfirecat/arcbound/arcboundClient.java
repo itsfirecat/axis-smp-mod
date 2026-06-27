@@ -1,12 +1,14 @@
 package net.itsfirecat.arcbound;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.itsfirecat.arcbound.client.render.ClientSonarEffects;
 import net.itsfirecat.arcbound.network.*;
 import net.itsfirecat.arcbound.qte.client.ClientQTE;
 import net.itsfirecat.arcbound.qte.client.QTEHud;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 
 public class arcboundClient implements ClientModInitializer {
@@ -30,7 +32,7 @@ public class arcboundClient implements ClientModInitializer {
             });
         });
 
-        // 4. Receive Packet: Clientbound ESP target UUID tracker link
+        // 4. Receive Packet: ESP target UUID tracker link
         ClientPlayNetworking.registerGlobalReceiver(QTEESPPacket.ID, (payload, context) -> {
             context.client().execute(() -> {
                 java.util.Set<java.util.UUID> targets = new java.util.HashSet<>(payload.targets());
@@ -83,7 +85,6 @@ public class arcboundClient implements ClientModInitializer {
                 switch (payload.stateId()) {
                     case 2 -> net.itsfirecat.arcbound.qte.client.ArcVisuals.setAnimationTarget(caster, 1);
                     case 3 -> net.itsfirecat.arcbound.qte.client.ArcVisuals.setAnimationTarget(caster, 2);
-                    // Inside your switch (payload.stateId()) block:
                     case 4 -> {
                         // HOLLOW PURPLE LAUNCH: Triggers the JJK screen inversion freeze frame sequence instantly!
                         net.itsfirecat.arcbound.qte.client.ArcVisuals.triggerFlash(800, 0xFFFFFF);
@@ -127,6 +128,25 @@ public class arcboundClient implements ClientModInitializer {
             net.itsfirecat.arcbound.client.ArcImpactRenderType.reload(
                     net.minecraft.client.MinecraftClient.getInstance().getResourceManager()
             );
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(ResonancePulsePayload.ID, (payload, context) -> {
+            System.out.println("[Arcbound-Debug] Client: Received ResonancePulsePayload packet from server");
+            context.client().execute(() -> {
+                ClientWorld world = context.client().world;
+                if (world != null) {
+                    System.out.println("[Arcbound-Debug] Client: World context validated, forwarding to renderer");
+
+                    // Splits routing based on whether the packet is marked as a QTE success/active tick
+                    if (payload.isQteSuccess()) {
+                        ClientSonarEffects.spawnQtePulseWave(world, payload.center());
+                    } else {
+                        ClientSonarEffects.spawnPulseWave(world, payload.center(), false);
+                    }
+                } else {
+                    System.out.println("[Arcbound-Debug] Client Error: ClientWorld was null on packet arrival");
+                }
+            });
         });
     }
 }

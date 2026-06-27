@@ -2,6 +2,7 @@ package net.itsfirecat.arcbound;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.itsfirecat.arcbound.client.render.ClientSonarEffects;
+import net.itsfirecat.arcbound.client.render.ClientFreezeEffects;
 import net.itsfirecat.arcbound.network.*;
 import net.itsfirecat.arcbound.qte.client.ClientQTE;
 import net.itsfirecat.arcbound.qte.client.QTEHud;
@@ -108,6 +109,7 @@ public class arcboundClient implements ClientModInitializer {
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             net.itsfirecat.arcbound.qte.client.ArcVisuals.tickClientAnimations();
             net.itsfirecat.arcbound.client.ArcImpactHandler.tick();
+            net.itsfirecat.arcbound.client.render.ClientFreezeEffects.tickActiveVisuals();
         });
 
         // 8. Entity renderer
@@ -131,11 +133,9 @@ public class arcboundClient implements ClientModInitializer {
         });
 
         ClientPlayNetworking.registerGlobalReceiver(ResonancePulsePayload.ID, (payload, context) -> {
-            System.out.println("[Arcbound-Debug] Client: Received ResonancePulsePayload packet from server");
             context.client().execute(() -> {
                 ClientWorld world = context.client().world;
                 if (world != null) {
-                    System.out.println("[Arcbound-Debug] Client: World context validated, forwarding to renderer");
 
                     // Splits routing based on whether the packet is marked as a QTE success/active tick
                     if (payload.isQteSuccess()) {
@@ -145,6 +145,31 @@ public class arcboundClient implements ClientModInitializer {
                     }
                 } else {
                     System.out.println("[Arcbound-Debug] Client Error: ClientWorld was null on packet arrival");
+                }
+            });
+        });
+
+        // 10. Receive Freeze Packet visual implementation hook
+        ClientPlayNetworking.registerGlobalReceiver(FreezePulsePayload.ID, (payload, context) -> {
+            context.client().execute(() -> {
+                ClientWorld world = context.client().world;
+                net.minecraft.client.network.ClientPlayerEntity localPlayer = context.client().player;
+
+                if (world != null && localPlayer != null) {
+                    // Box centered at the freeze position
+                    net.minecraft.util.math.Box targetBox = net.minecraft.util.math.Box.of(payload.center(), 2.0, 3.0, 2.0);
+
+                    // FILTER: Make sure the entity is NOT the local player who cast the spell
+                    var matchingEntities = world.getEntitiesByClass(
+                            net.minecraft.entity.LivingEntity.class,
+                            targetBox,
+                            entity -> entity != localPlayer
+                    );
+
+                    if (!matchingEntities.isEmpty()) {
+                        Entity target = matchingEntities.get(0);
+                        ClientFreezeEffects.startFreezeEffect(world, target.getId(), payload.durationTicks());
+                    }
                 }
             });
         });

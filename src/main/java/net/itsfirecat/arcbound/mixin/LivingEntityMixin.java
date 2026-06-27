@@ -24,7 +24,6 @@ public class LivingEntityMixin {
             }
 
             if (InfinityState.isActive(player)) {
-                System.out.println("infinity blocked damage");
                 cir.setReturnValue(false);
             }
         }

@@ -61,6 +61,7 @@ public class arcbound implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(ArcFlashPacket.ID, ArcFlashPacket.CODEC);
 		PayloadTypeRegistry.playS2C().register(ArcVisualPayload.ID, ArcVisualPayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(ResonancePulsePayload.ID, ResonancePulsePayload.CODEC);
+		PayloadTypeRegistry.playS2C().register(FreezePulsePayload.ID, FreezePulsePayload.CODEC);
 
 		// Client-to-Server payloads
 		PayloadTypeRegistry.playC2S().register(QTEHitPacket.ID, QTEHitPacket.CODEC);
@@ -107,7 +108,6 @@ public class arcbound implements ModInitializer {
 						}
 
 						case PULSE -> {
-							System.out.println("[Arcbound-Debug] Server received PULSE QTE success for player: " + player.getName().getString());
 
 							double range = 10.0;
 							net.minecraft.util.math.Box area = player.getBoundingBox().expand(range);
@@ -127,8 +127,6 @@ public class arcbound implements ModInitializer {
 									p -> true
 							);
 
-							System.out.println("[Arcbound-Debug] Broadcasting visual states to " + nearbyServerPlayers.size() + " nearby players.");
-
 							for (ServerPlayerEntity nearby : nearbyServerPlayers) {
 								ServerPlayNetworking.send(nearby, new ArcVisualPayload(player.getUuid(), 6));
 								ServerPlayNetworking.send(nearby, new ArcFlashPacket(arcbound.PULSE_FLASH_DURATION_MS, 0x0A0A0A));
@@ -136,7 +134,6 @@ public class arcbound implements ModInitializer {
 
 							player.setVelocity(0.0, 0.45, 0.0);
 							player.velocityModified = true;
-							System.out.println("[Arcbound-Debug] Server applied initial upward velocity vector.");
 
 							List<PlayerEntity> playersInRange = player.getServerWorld().getEntitiesByClass(
 									PlayerEntity.class,
@@ -161,7 +158,6 @@ public class arcbound implements ModInitializer {
 									}
 								}
 							}
-							System.out.println("[Arcbound-Debug] Server locked down " + lockCount + " total arc items on nearby targets.");
 
 							player.getServerWorld().playSound(
 									null,

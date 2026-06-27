@@ -35,8 +35,6 @@ public class ResonanceArcItem extends Item {
                 return TypedActionResult.fail(stack);
             }
 
-            System.out.println("[Arcbound-Debug] Server: ResonanceArcItem used by " + serverPlayer.getName().getString());
-
             // 1. Core Mechanics
             executeBaseAbility(serverPlayer, (ServerWorld) world);
 

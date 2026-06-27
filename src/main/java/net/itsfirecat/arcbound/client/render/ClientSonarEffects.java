@@ -13,15 +13,12 @@ public class ClientSonarEffects {
      * This method runs on the first click (base ability use)
      */
     public static void spawnPulseWave(ClientWorld world, Vec3d center, boolean isQteSuccess) {
-        System.out.println("[Arcbound-Debug] Client Render: spawnPulseWave called at " + center);
-
         for (int step = 0; step <= 20; step++) {
             final double radius = (step / 20.0) * 10.0;
             final int points = (int) (radius * 6) + 8;
             final int delayTicks = step;
 
             runDelayed(delayTicks, () -> {
-                System.out.println("[Arcbound-Debug] Client Render: Executing task loop for radius step " + delayTicks);
                 for (int i = 0; i < points; i++) {
                     double angle = (i * 2 * Math.PI) / points;
                     double x = center.x + (radius * Math.cos(angle));
@@ -45,7 +42,6 @@ public class ClientSonarEffects {
      * This method renders a distinct, sharp sequential ripple sequence using dark particles
      */
     public static void spawnQtePulseWave(ClientWorld world, Vec3d center) {
-        System.out.println("[Arcbound-Debug] Client Render: spawnQtePulseWave sequence triggered at " + center);
 
         // Runs a staggered 15-step expanding ring sequence (1 block per tick increment)
         for (int step = 1; step <= 15; step++) {
@@ -61,7 +57,6 @@ public class ClientSonarEffects {
 
                     // Hands the particle rendering back to the main client context safely
                     net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
-                        System.out.println("[Arcbound-Debug] Client Render: Executing QTE task loop for radius step " + delayTicks);
                         for (int i = 0; i < points; i++) {
                             double angle = (i * 2 * Math.PI) / points;
                             double x = center.x + (radius * Math.cos(angle));

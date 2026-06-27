@@ -43,8 +43,6 @@ public class ArcImpactHandler {
         whiteFrame = (seq[0] == FrameType.WHITE || seq[0] == FrameType.RED);
         playing         = true;
         suppressOverlay = suppress;
-        System.out.println("[ARCIMPACT] start() called, playing=" + playing + ", shadersReady="
-                + net.itsfirecat.arcbound.client.ArcImpactRenderType.isReady());
     }
 // I FUCKING DID IT
     public static void start(int frames, long durationEach, boolean suppress) {

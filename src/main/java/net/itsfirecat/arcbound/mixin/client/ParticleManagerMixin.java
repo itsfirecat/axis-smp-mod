@@ -24,7 +24,6 @@ public class ParticleManagerMixin {
             CallbackInfoReturnable<Particle> cir
     ) {
         Particle particle = cir.getReturnValue();
-       // System.out.println("[MIXIN] addParticle called, got: " + particle + ", tracking: " + ArcVisuals.isSpawningTracked);
         if (particle != null && ArcVisuals.isSpawningTracked) {
             ArcVisuals.trackParticle(particle);
         }
